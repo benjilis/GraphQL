@@ -10,18 +10,15 @@ public class LinqController : ControllerBase
     private readonly ChinookContext _context;
     public LinqController(ChinookContext context) => _context = context;
 
-    // 1. Simple : Liste des artistes
     [HttpGet("simple")]
     public async Task<IActionResult> GetSimple()
     {
         return Ok(await _context.Artists.AsNoTracking().ToListAsync());
     }
 
-    // 2. Complexe : Arborescence complète
     [HttpGet("complex")]
     public async Task<IActionResult> GetComplex()
     {
-        // Utilisation de AsSplitQuery pour éviter l'erreur APPLY sur SQLite
         return Ok(await _context.Artists
             .AsNoTracking()
             .AsSplitQuery()
@@ -30,7 +27,6 @@ public class LinqController : ControllerBase
             .ToListAsync());
     }
 
-    // 3. Filtré : StartsWith "A"
     [HttpGet("filtered")]
     public async Task<IActionResult> GetFiltered()
     {

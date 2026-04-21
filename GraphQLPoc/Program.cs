@@ -5,11 +5,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajout des contrôleurs pour ton comparatif API
 builder.Services.AddControllers();
 
+// Configuration de la base de données SQLite
 builder.Services.AddDbContext<ChinookContext>(options =>
     options.UseSqlite("Data Source=./chinook.db")
+           // LogTo permet de voir les requêtes SQL générées par EF Core
            .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddHttpClient("BenchmarkClient", client =>
@@ -20,24 +21,24 @@ builder.Services.AddHttpClient("BenchmarkClient", client =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Cette option permet d'ignorer les cycles d'objets au lieu de planter
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-
-        // Optionnel : rend le JSON plus lisible en conservant les noms de propriétés
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
+// Configuration de HotChocolate (Moteur GraphQL)
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>()
-    .AddProjections()
-    .AddFiltering()
-    .AddSorting();
+    .AddQueryType<Query>()    // Enregistre la classe contenant les requêtes GraphQL
+    .AddProjections()        // Permet à GraphQL d'extraire uniquement les colonnes demandées (évite le SELECT *)
+    .AddFiltering()          // Active les filtres dynamiques
+    .AddSorting();           
 
 var app = builder.Build();
 
+// Mappe les routes des contrôleurs REST (api/linq, api/sql, api/benchmark)
+app.MapControllers();
 
-
-app.MapControllers(); // Pour ton ComparisonController
+// Mappe le point d'entrée unique GraphQL (/graphql) et l'IDE Banana Cake Pop
 app.MapGraphQL();
+
 app.Run();
