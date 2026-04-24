@@ -27,6 +27,7 @@ Pour réaliser ce comparatif, les bibliothèques suivantes ont été utilisées 
 * **HotChocolate** (`HotChocolate.AspNetCore`) : Le moteur GraphQL pour .NET.
 * **Entity Framework Core** (`Sqlite`) : L'ORM utilisé pour le mapping des données.
 * **Microsoft.Extensions.Http** : Pour simuler des appels clients réels lors du benchmark.
+* **Swashbuckle.AspNetCore** : Documentation OpenAPI/Swagger pour les API REST.
 
 ---
 
@@ -53,7 +54,28 @@ Chaque test est lancé **20 fois** consécutivement via un `HttpClient`. Le benc
 
 ---
 
-## 📊 6. Résultats des Benchmarks (Mesures Réelles)
+## � 6. Documentation API avec Swagger
+
+L'application expose automatiquement une **documentation interactive Swagger/OpenAPI** pour tous les endpoints REST :
+
+### Accès à Swagger
+- **URL** : `http://localhost:5154/swagger`
+- **Spécification OpenAPI** : `http://localhost:5154/swagger/v1/swagger.json`
+
+### Points d'accès documentés
+- **REST LINQ** : `/api/linq/*` - Implémentation avec LINQ
+- **REST SQL** : `/api/sql/*` - Implémentation avec SQL brut
+- **Benchmark** : `/api/benchmark/run` - Tests de performance automatisés
+
+### Avantages de Swagger
+✅ Documentation auto-générée  
+✅ Interface pour tester les endpoints sans Postman  
+✅ Schéma OpenAPI pour l'intégration client  
+✅ Validation automatique des requêtes/réponses  
+
+---
+
+## 📊 7. Résultats des Benchmarks (Mesures Réelles)
 
 | Scénario | LINQ (REST) | SQL / EF (REST) | GraphQL | Gagnant |
 | :--- | :--- | :--- | :--- | :--- |
@@ -63,7 +85,7 @@ Chaque test est lancé **20 fois** consécutivement via un `HttpClient`. Le benc
 
 ---
 
-## 🔍 7. Analyse des résultats
+## 🔍 8. Analyse des résultats
 
 ### 1. Efficacité sur les requêtes simples
 Contrairement aux idées reçues, **GraphQL gagne sur la requête simple (~13ms)**. Cela s'explique par la légèreté du payload JSON : GraphQL ne retourne que le champ demandé (`name`), réduisant le temps de sérialisation par rapport à REST qui renvoie tous les champs de la table.
@@ -78,7 +100,7 @@ C'est le résultat le plus frappant : **SQL Brut s'effondre avec ~2415ms** contr
 
 ---
 
-## 🎯 8. Conclusion du POC
+## 🎯 9. Conclusion du POC
 Les tests démontrent que :
 1. **GraphQL n'est pas "plus lent"** : Il peut surpasser REST même sur des tâches simples grâce à la réduction de la taille des données.
 2. **Le SQL Brut est risqué en REST** : Sans une logique complexe de sélection de champs (DTO), le SQL traditionnel expose l'application à des chutes de performances critiques.
